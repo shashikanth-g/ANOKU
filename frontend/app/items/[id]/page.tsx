@@ -107,7 +107,9 @@ export default function ItemDetailPage() {
           status: "confirmed",
           delivery_address: deliveryAddress,
           renter_name: renterName,
-          renter_phone: renterPhone
+          renter_phone: renterPhone,
+          latitude: latitude ? parseFloat(latitude) : null,
+          longitude: longitude ? parseFloat(longitude) : null
         }),
       });
       setShowSuccess(true);

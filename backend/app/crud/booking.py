@@ -12,6 +12,9 @@ def get_bookings_by_renter(db: Session, renter_id: UUID):
 def get_bookings_by_owner(db: Session, owner_id: UUID):
     return db.query(Booking).filter(Booking.owner_id == owner_id).all()
 
+def get_all_bookings(db: Session):
+    return db.query(Booking).order_by(Booking.created_at.desc()).all()
+
 def create_booking(db: Session, booking: BookingCreate):
     db_booking = Booking(**booking.model_dump())
     db.add(db_booking)

@@ -14,6 +14,12 @@ class BookingBase(BaseModel):
     delivery_address: Optional[str] = None
     renter_name: Optional[str] = None
     renter_phone: Optional[str] = None
+    payment_status: Optional[str] = "pending"
+    payment_method: Optional[str] = None
+    delivery_type: Optional[str] = "standard"
+    pickup_required: bool = False
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     notes: Optional[str] = None
 
 class BookingCreate(BookingBase):
@@ -26,6 +32,12 @@ class BookingUpdate(BaseModel):
     delivery_time: Optional[datetime] = None
     return_pickup_time: Optional[datetime] = None
     return_delivery_time: Optional[datetime] = None
+    payment_status: Optional[str] = None
+    payment_method: Optional[str] = None
+    delivery_type: Optional[str] = None
+    pickup_required: Optional[bool] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 from app.schemas.item import Item
 
