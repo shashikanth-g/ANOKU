@@ -1,6 +1,6 @@
 import { getToken, clearToken } from './auth';
 
-const API_URL = "http://192.168.1.12:8000/api/v1";
+const API_URL = "https://anoku.onrender.com/api/v1";
 
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const token = getToken();
