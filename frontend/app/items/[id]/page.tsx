@@ -24,6 +24,7 @@ export default function ItemDetailPage() {
   const [deliveryType, setDeliveryType] = useState("standard");
   const [pickupTime, setPickupTime] = useState("");
   const [deliveryTime, setDeliveryTime] = useState("");
+  const durationNum = Number(duration) || 0;
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export default function ItemDetailPage() {
     }
   }, [user]);
 
-  const totalPrice = item ? Math.round((item.daily_price / 24) * (Number(duration) || 0)) : 0;
+  const totalPrice = item ? Math.round((item.daily_price / 24) * durationNum) : 0;
 
   const [showSuccess, setShowSuccess] = useState(false);
   const { addToCart } = useCartStore();
@@ -73,7 +74,7 @@ export default function ItemDetailPage() {
   };
 
   const handleAddToCart = () => {
-    const durationNum = Number(duration) || 24;
+    const finalDuration = durationNum || 24;
     const logisticsCharge = deliveryType === "premium" ? 249 : 0;
     
     addToCart({
@@ -83,7 +84,7 @@ export default function ItemDetailPage() {
       image: images[0],
       deliveryType: deliveryType,
       deliveryCharge: logisticsCharge,
-      durationHours: durationNum,
+      durationHours: finalDuration,
       totalPrice: totalPrice + logisticsCharge,
       ownerId: item.owner_id
     });
@@ -102,14 +103,13 @@ export default function ItemDetailPage() {
       return;
     }
     
-    if (!duration || Number(duration) <= 0) {
+    if (!duration || durationNum <= 0) {
       alert("Please enter a valid duration");
       return;
     }
     
     setBookingLoading(true);
     try {
-      const durationNum = Number(duration);
       await fetchApi("/bookings/", {
         method: "POST",
         body: JSON.stringify({
@@ -500,7 +500,7 @@ export default function ItemDetailPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-[var(--color-text-secondary)]">Duration</span>
-                  <span className="font-bold">{Number(duration) >= 24 ? `${Math.round(Number(duration)/24)} Days` : `${duration} Hours`}</span>
+                  <span className="font-bold">{durationNum >= 24 ? `${Math.round(durationNum/24)} Days` : `${durationNum} Hours`}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-[var(--color-text-secondary)]">Total Paid</span>
