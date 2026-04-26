@@ -2,15 +2,21 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface CartItem {
+  cartItemId: string;
   id: string;
   name: string;
   price: number;
   image: string;
+  deliveryType: string;
+  deliveryCharge: number;
+  durationHours: number;
+  totalPrice: number;
+  ownerId: string;
 }
 
 interface CartState {
   items: CartItem[];
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: Omit<CartItem, 'cartItemId'>) => void;
   removeFromCart: (id: string) => void;
   clearCart: () => void;
 }
@@ -20,11 +26,12 @@ export const useCartStore = create<CartState>()(
     (set) => ({
       items: [],
       addToCart: (item) => set((state) => {
-        if (state.items.find((i) => i.id === item.id)) return state;
-        return { items: [...state.items, item] };
+        // Generate a unique ID for this cart entry
+        const cartItemWithId = { ...item, cartItemId: Math.random().toString(36).substr(2, 9) };
+        return { items: [...state.items, cartItemWithId] };
       }),
-      removeFromCart: (id) => set((state) => ({
-        items: state.items.filter((i) => i.id !== id),
+      removeFromCart: (cartItemId) => set((state) => ({
+        items: state.items.filter((i) => i.cartItemId !== cartItemId),
       })),
       clearCart: () => set({ items: [] }),
     }),

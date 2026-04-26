@@ -6,13 +6,13 @@ import { Navigation } from "@/components/layout/Navigation";
 import { Button } from "@/components/common/Button";
 import { Card, CardContent } from "@/components/common/Card";
 import { useCartStore } from "@/store/cartStore";
-import { Trash2, ShoppingBag, ArrowRight, ChevronRight } from "lucide-react";
+import { Trash2, ShoppingBag, ArrowRight, ChevronRight, Clock, Truck, Sparkles, Waves } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { useState } from "react";
 import { fetchApi } from "@/lib/api";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle2, Info } from "lucide-react";
 
 export default function CartPage() {
   const { items, removeFromCart, clearCart } = useCartStore();
@@ -21,7 +21,9 @@ export default function CartPage() {
   const [isBooking, setIsBooking] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const totalPrice = items.reduce((sum, item) => sum + item.price, 0);
+  const totalRent = items.reduce((sum, item) => sum + (item.totalPrice - item.deliveryCharge), 0);
+  const totalLogistics = items.reduce((sum, item) => sum + item.deliveryCharge, 0);
+  const grandTotal = totalRent + totalLogistics;
 
   const handleBookAll = async () => {
     if (!user) {
@@ -38,14 +40,14 @@ export default function CartPage() {
           body: JSON.stringify({
             item_id: item.id,
             renter_id: user.id,
-            owner_id: "0f73f16f-bd41-4c0d-830d-d3196f69532e", // Fallback owner ID for MVP
+            owner_id: item.ownerId, // Using the correct owner from the cart item
             start_date: new Date().toISOString().split('T')[0],
-            end_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // 1 day default
-            duration_hours: 24,
-            total_price: item.price,
-            deposit: 500,
+            end_date: new Date(Date.now() + (item.durationHours * 3600000)).toISOString().split('T')[0],
+            duration_hours: item.durationHours,
+            total_price: Math.round(item.totalPrice),
+            delivery_type: item.deliveryType || "standard",
             status: "confirmed",
-            delivery_address: "Address on file", // Placeholder for MVP
+            delivery_address: "Address on file", // Placeholder
             renter_name: user.name || "Customer",
             renter_phone: "0000000000"
           }),
@@ -89,8 +91,8 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {items.map((item) => (
-              <Card key={item.id} className="overflow-hidden border-none shadow-xl glass group">
+            {items.map((item, index) => (
+              <Card key={item.cartItemId || `${item.id}-${index}`} className="overflow-hidden border-none shadow-xl glass group">
                 <CardContent className="p-0 flex h-28">
                   <div className="relative w-28 h-full bg-black/5">
                     <img 
@@ -102,22 +104,33 @@ export default function CartPage() {
                   <div className="flex-1 p-4 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-bold text-lg leading-tight">{item.name}</h3>
-                        <p className="text-xs text-[var(--color-primary)] font-bold">₹{item.price} <span className="text-[var(--color-text-secondary)] font-normal">/ day</span></p>
+                        <h3 className="font-bold text-base leading-tight mb-1">{item.name}</h3>
+                        <div className="flex flex-wrap gap-2">
+                          <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 dark:bg-white/5 px-2 py-0.5 rounded-md">
+                            <Clock className="w-3 h-3" /> {item.durationHours || 24}h
+                          </div>
+                          <div className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md ${(item.deliveryType || 'standard') === 'premium' ? 'text-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'text-zinc-500 bg-zinc-100 dark:bg-white/5'}`}>
+                            {(item.deliveryType || 'standard') === 'premium' ? <Sparkles className="w-3 h-3" /> : <Truck className="w-3 h-3" />}
+                            {(item.deliveryType || 'standard').toUpperCase()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                         <p className="font-bold text-sm">₹{(item.totalPrice || item.price).toLocaleString()}</p>
+                         <p className="text-[8px] text-zinc-500 uppercase font-bold tracking-wider">Total</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center gap-4 text-[10px] text-zinc-400 font-medium">
+                         <span>Rent: ₹{(item.totalPrice || item.price) - (item.deliveryCharge || 0)}</span>
+                         <span>Logistics: {(item.deliveryCharge || 0) > 0 ? `₹${item.deliveryCharge}` : 'Free'}</span>
                       </div>
                       <button 
-                        onClick={() => removeFromCart(item.id)}
-                        className="p-2 rounded-full hover:bg-[var(--color-error)]/10 text-[var(--color-text-secondary)] hover:text-[var(--color-error)] transition-colors"
+                        onClick={() => removeFromCart(item.cartItemId)}
+                        className="text-[var(--color-error)] opacity-50 hover:opacity-100 transition-opacity p-1"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="flex justify-end">
-                      <button 
-                        onClick={() => router.push(`/items/${item.id}`)}
-                        className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-primary)] flex items-center gap-1 hover:gap-2 transition-all"
-                      >
-                        Book Now <ChevronRight className="w-3 h-3" />
                       </button>
                     </div>
                   </div>
@@ -126,18 +139,28 @@ export default function CartPage() {
             ))}
 
             <div className="mt-12 p-8 rounded-3xl bg-[var(--color-card)] shadow-2xl border border-[var(--color-border)] relative overflow-hidden">
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <p className="text-sm text-[var(--color-text-secondary)] font-medium">Cart Total ({items.length} items)</p>
-                  <p className="text-3xl font-bold">₹{totalPrice.toLocaleString()}</p>
+              <h3 className="text-xl font-bold mb-6">Price Summary</h3>
+              <div className="space-y-3 mb-8">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-zinc-500">Subtotal ({items.length} items)</span>
+                  <span className="font-medium text-[var(--color-text-primary)]">₹{totalRent.toLocaleString()}</span>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs text-[var(--color-text-secondary)] italic">Delivery handled separately</p>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-zinc-500">Logistics & Delivery</span>
+                  <span className="font-medium text-[var(--color-success)]">{totalLogistics > 0 ? `₹${totalLogistics.toLocaleString()}` : 'Free'}</span>
+                </div>
+                <div className="pt-3 border-t border-[var(--color-border)] flex justify-between items-center">
+                  <span className="font-bold text-lg">Grand Total</span>
+                  <span className="font-bold text-2xl text-[var(--color-primary)]">₹{grandTotal.toLocaleString()}</span>
                 </div>
               </div>
-              <p className="text-xs text-[var(--color-text-secondary)] mb-6 bg-black/5 dark:bg-white/5 p-4 rounded-xl leading-relaxed">
-                Clicking "Book All" will create separate bookings for each item. Our team will coordinate delivery for all pieces together.
-              </p>
+
+              <div className="text-xs text-[var(--color-text-secondary)] mb-6 bg-black/5 dark:bg-white/5 p-4 rounded-xl flex gap-3">
+                <Info className="w-4 h-4 flex-shrink-0 text-[var(--color-primary)]" />
+                <p className="leading-relaxed">
+                  Your premium logistics includes professional wash, insurance coverage during transit, and safe packaging.
+                </p>
+              </div>
               
               <div className="space-y-3">
                 <Button 

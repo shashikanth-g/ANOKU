@@ -46,13 +46,23 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--color-background)] intro-overlay pointer-events-none">
-          <div className="intro-logo flex items-center gap-4">
-            <div className="h-16 w-16 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center shadow-2xl">
-              <span className="text-white font-bold text-4xl leading-none">A</span>
+          <div className="intro-logo flex flex-col items-center gap-6">
+            <div className="flex items-center gap-4">
+              <div className="h-20 w-20 rounded-3xl bg-[var(--color-primary)] flex items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.1)] border border-white/10">
+                <span className="text-white font-bold text-5xl leading-none">A</span>
+              </div>
+              <span className="font-bold text-6xl tracking-tighter text-[var(--color-primary)]">
+                ANOKU
+              </span>
             </div>
-            <span className="font-bold text-5xl tracking-tight text-[var(--color-primary)]">
-              ANOKU
-            </span>
+            <div className="flex flex-col items-center text-center">
+              <h2 className="text-xl font-medium text-[var(--color-text-secondary)] tracking-[0.2em] uppercase opacity-80">
+                Wear the Moment
+              </h2>
+              <p className="text-[10px] uppercase tracking-widest text-[var(--color-accent)] font-bold mt-3 border-t border-[var(--color-border)] pt-3 px-4">
+                Premium Fashion Rental
+              </p>
+            </div>
           </div>
         </div>
         {children}

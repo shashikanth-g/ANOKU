@@ -1,8 +1,14 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# =========================================
+# FRONTEND (Next.js / Node)
+# =========================================
+node_modules/
+.next/
+out/
+build/
+dist/
 
-# dependencies
-/node_modules
-/.pnp
+# Yarn / PnP
+.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -10,39 +16,75 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# =========================================
+# LOGS
+# =========================================
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# =========================================
+# ENV FILES (CRITICAL - NEVER PUSH)
+# =========================================
+.env
+.env.*
+backend/.env
+frontend/.env
+frontend/.env.local
+backend/.env.local
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-# Python (backend)
+# =========================================
+# PYTHON / BACKEND
+# =========================================
 venv/
+.venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.egg-info/
 
-# Database
+# =========================================
+# DATABASE FILES
+# =========================================
 *.db
+*.sqlite3
+
+# =========================================
+# TEMP / DEBUG FILES
+# =========================================
+test_*.py
+check_*.py
+migrate_*.py
+debug_*.py
+
+# =========================================
+# OS FILES
+# =========================================
+.DS_Store
+Thumbs.db
+
+# =========================================
+# VERCEL / DEPLOYMENT
+# =========================================
+.vercel
+
+# =========================================
+# TYPESCRIPT
+# =========================================
+*.tsbuildinfo
+next-env.d.ts
+
+# =========================================
+# IDE / EDITOR
+# =========================================
+.vscode/
+.idea/
+
+# =========================================
+# OPTIONAL: MEDIA / UPLOADS (if local)
+# =========================================
+uploads/
+media/

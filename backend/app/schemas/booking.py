@@ -10,13 +10,15 @@ class BookingBase(BaseModel):
     num_days: Optional[int] = None
     duration_hours: int
     total_price: int
-    deposit: int = 500
+    deposit: Optional[int] = None
     delivery_address: Optional[str] = None
     renter_name: Optional[str] = None
     renter_phone: Optional[str] = None
     payment_status: Optional[str] = "pending"
     payment_method: Optional[str] = None
     delivery_type: Optional[str] = "standard"
+    pickup_time: Optional[datetime] = None
+    delivery_time: Optional[datetime] = None
     pickup_required: bool = False
     latitude: Optional[float] = None
     longitude: Optional[float] = None

@@ -16,7 +16,7 @@ def create_booking(booking: BookingCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=List[BookingSchema])
 def get_all_bookings(db: Session = Depends(get_db)):
-    bookings = db.query(Booking).order_by(Booking.id.desc()).all()
+    bookings = db.query(Booking).order_by(Booking.created_at.desc()).all()
     return bookings
 
 @router.get("/{booking_id}", response_model=BookingSchema)

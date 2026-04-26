@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Env files
+.env
+.env.*
+backend/.env
+
+# Node
+node_modules/
+
+# Build files
+.next/
+dist/
+build/
+
+# OS files
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary / debug
+test_write.py
+check_settings.py
+migrate_lat_lng.py
+test_api.py
+test_connection.py

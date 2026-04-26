@@ -7,7 +7,7 @@ import { Header } from "@/components/layout/Header";
 import { Navigation } from "@/components/layout/Navigation";
 import { Button } from "@/components/common/Button";
 import { Card, CardContent } from "@/components/common/Card";
-import { Star, Shield, Info, Calendar as CalendarIcon, Loader2, Package, CheckCircle, Share2, ShoppingCart, Crosshair } from "lucide-react";
+import { Star, Shield, Info, Calendar as CalendarIcon, Loader2, Package, CheckCircle, Share2, ShoppingCart, Crosshair, Sparkles, Waves, ShieldCheck, Truck } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
@@ -19,8 +19,11 @@ export default function ItemDetailPage() {
   const [loading, setLoading] = useState(true);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
-  const [duration, setDuration] = useState(4); // default 4 hours
+  const [duration, setDuration] = useState<string>("4"); // changed to string for better input handling
   const [durationType, setDurationType] = useState<"hours" | "days">("hours");
+  const [deliveryType, setDeliveryType] = useState("standard");
+  const [pickupTime, setPickupTime] = useState("");
+  const [deliveryTime, setDeliveryTime] = useState("");
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
@@ -46,7 +49,7 @@ export default function ItemDetailPage() {
     }
   }, [user]);
 
-  const totalPrice = item ? Math.round((item.daily_price / 24) * duration) : 0;
+  const totalPrice = item ? Math.round((item.daily_price / 24) * (Number(duration) || 0)) : 0;
 
   const [showSuccess, setShowSuccess] = useState(false);
   const { addToCart } = useCartStore();
@@ -70,11 +73,19 @@ export default function ItemDetailPage() {
   };
 
   const handleAddToCart = () => {
+    const durationNum = Number(duration) || 24;
+    const logisticsCharge = deliveryType === "premium" ? 249 : 0;
+    
     addToCart({
       id: item.id,
       name: item.name,
       price: item.daily_price,
-      image: images[0]
+      image: images[0],
+      deliveryType: deliveryType,
+      deliveryCharge: logisticsCharge,
+      durationHours: durationNum,
+      totalPrice: totalPrice + logisticsCharge,
+      ownerId: item.owner_id
     });
     setCartMessage("Added to cart!");
     setTimeout(() => setCartMessage(""), 2000);
@@ -91,8 +102,14 @@ export default function ItemDetailPage() {
       return;
     }
     
+    if (!duration || Number(duration) <= 0) {
+      alert("Please enter a valid duration");
+      return;
+    }
+    
     setBookingLoading(true);
     try {
+      const durationNum = Number(duration);
       await fetchApi("/bookings/", {
         method: "POST",
         body: JSON.stringify({
@@ -100,16 +117,18 @@ export default function ItemDetailPage() {
           renter_id: user.id,
           owner_id: item.owner_id,
           start_date: new Date().toISOString().split('T')[0],
-          end_date: new Date(Date.now() + 3600000 * duration).toISOString().split('T')[0],
-          duration_hours: duration,
-          total_price: totalPrice,
-          deposit: 500,
+          end_date: new Date(Date.now() + 3600000 * durationNum).toISOString().split('T')[0],
+          duration_hours: durationNum,
+          total_price: totalPrice + (deliveryType === "premium" ? 249 : 0),
           status: "confirmed",
           delivery_address: deliveryAddress,
           renter_name: renterName,
           renter_phone: renterPhone,
           latitude: latitude ? parseFloat(latitude) : null,
-          longitude: longitude ? parseFloat(longitude) : null
+          longitude: longitude ? parseFloat(longitude) : null,
+          delivery_type: deliveryType,
+          pickup_time: pickupTime || null,
+          delivery_time: deliveryTime || null
         }),
       });
       setShowSuccess(true);
@@ -207,62 +226,109 @@ export default function ItemDetailPage() {
                       </span>
                     </p>
                   </div>
-                  <div className="text-right text-xs text-[var(--color-text-secondary)]">
-                     Refundable Deposit: <span className="font-bold text-[var(--color-text-primary)]">₹500</span>
-                  </div>
                 </div>
               
-              <div className="space-y-4 mb-6">
-                <div className="p-1.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-[var(--color-border)] flex">
-                  <button 
-                    onClick={() => {
-                      setDurationType("hours");
-                      setDuration(4);
-                    }}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${durationType === "hours" ? 'bg-white dark:bg-zinc-800 shadow-md text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
-                  >
-                    Hourly
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setDurationType("days");
-                      setDuration(24);
-                    }}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${durationType === "days" ? 'bg-white dark:bg-zinc-800 shadow-md text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
-                  >
-                    Daily
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-[var(--color-border)] transition-all">
-                  <div className="flex-1">
-                    <p className="text-[10px] uppercase font-bold text-[var(--color-text-secondary)] mb-1">
-                      Number of {durationType === "days" ? "Days" : "Hours"}
+                <div className="flex flex-col gap-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-[var(--color-border)]">
+                  <div>
+                    <p className="text-[10px] uppercase font-bold text-[var(--color-text-secondary)] mb-1.5 ml-1">
+                      Rental Duration (Hours)
                     </p>
                     <div className="flex items-center gap-3">
                       <input 
                         type="number" 
-                        min="1"
-                        value={durationType === "days" ? Math.max(1, Math.floor(duration / 24)) : duration}
-                        onChange={(e) => {
-                          const val = Math.max(1, parseInt(e.target.value) || 1);
-                          setDuration(durationType === "days" ? val * 24 : val);
-                        }}
-                        className="w-20 bg-transparent font-bold text-2xl focus:outline-none text-[var(--color-primary)]"
+                        placeholder="e.g. 4"
+                        value={duration}
+                        onChange={(e) => setDuration(e.target.value)}
+                        className="w-full h-12 rounded-xl border border-[var(--color-border)] bg-white dark:bg-zinc-800 px-4 font-bold text-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50"
                       />
-                      <span className="text-sm font-medium text-[var(--color-text-secondary)] uppercase">
-                        {durationType}
-                      </span>
                     </div>
                   </div>
-                  <CalendarIcon className="w-6 h-6 text-[var(--color-primary)] opacity-40" />
+
+                  <div className="space-y-3">
+                    <p className="text-[10px] uppercase font-bold text-[var(--color-text-secondary)] ml-1">
+                      Choose Logistics Plan
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Standard Card */}
+                      <button 
+                        onClick={() => setDeliveryType("standard")}
+                        className={`flex flex-col text-left p-4 rounded-2xl border-2 transition-all ${deliveryType === "standard" ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5' : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30'}`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                            <Truck className="w-5 h-5 text-zinc-500" />
+                          </div>
+                          {deliveryType === "standard" && <CheckCircle className="w-5 h-5 text-[var(--color-primary)]" />}
+                        </div>
+                        <p className="font-bold text-sm mb-1">Standard</p>
+                        <p className="text-[10px] text-[var(--color-text-secondary)] leading-tight mb-2">
+                          Pickup & Safe Delivery only. No cleaning.
+                        </p>
+                        <p className="mt-auto font-bold text-sm text-[var(--color-primary)]">Free</p>
+                      </button>
+
+                      {/* Premium Card */}
+                      <button 
+                        onClick={() => setDeliveryType("premium")}
+                        className={`flex flex-col text-left p-4 rounded-2xl border-2 transition-all relative overflow-hidden ${deliveryType === "premium" ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5' : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30'}`}
+                      >
+                        <div className="absolute top-0 right-0 p-1.5 bg-[var(--color-accent)] text-white">
+                          <Sparkles className="w-3 h-3" />
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="p-2 rounded-lg bg-[var(--color-accent)]/10">
+                            <Waves className="w-5 h-5 text-[var(--color-accent)]" />
+                          </div>
+                          {deliveryType === "premium" && <CheckCircle className="w-5 h-5 text-[var(--color-primary)]" />}
+                        </div>
+                        <p className="font-bold text-sm mb-1">Premium Logistics</p>
+                        <p className="text-[10px] text-[var(--color-text-secondary)] leading-tight mb-2">
+                          Includes Professional Wash, Laundry, & Premium Packing.
+                        </p>
+                        <p className="mt-auto font-bold text-sm text-[var(--color-accent)]">₹249 <span className="text-[8px] font-normal text-zinc-400">/ order</span></p>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] uppercase font-bold text-[var(--color-text-secondary)] mb-1.5 ml-1">
+                        Pickup Time
+                      </p>
+                      <input 
+                        type="datetime-local"
+                        value={pickupTime}
+                        onChange={(e) => setPickupTime(e.target.value)}
+                        className="w-full h-12 rounded-xl border border-[var(--color-border)] bg-white dark:bg-zinc-800 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase font-bold text-[var(--color-text-secondary)] mb-1.5 ml-1">
+                        Expected Delivery Time
+                      </p>
+                      <input 
+                        type="datetime-local"
+                        value={deliveryTime}
+                        onChange={(e) => setDeliveryTime(e.target.value)}
+                        className="w-full h-12 rounded-xl border border-[var(--color-border)] bg-white dark:bg-zinc-800 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50"
+                      />
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="p-3 rounded-xl bg-[var(--color-primary)]/5 border border-[var(--color-primary)]/20">
+                <div className="p-4 rounded-2xl bg-[var(--color-primary)]/5 border border-[var(--color-primary)]/20">
                    <div className="flex justify-between items-center">
-                     <p className="text-[10px] uppercase font-bold text-[var(--color-text-secondary)]">Estimated Total</p>
-                     <div className="flex items-center gap-1 font-bold text-xl text-[var(--color-primary)]">
-                       <span>₹{totalPrice}</span>
+                     <div className="space-y-0.5">
+                       <p className="text-[10px] uppercase font-bold text-[var(--color-text-secondary)]">Total Rental Amount</p>
+                       {deliveryType === "premium" && (
+                         <p className="text-[9px] text-[var(--color-accent)] font-bold">Includes Premium Logistics (₹249)</p>
+                       )}
+                     </div>
+                     <div className="flex flex-col items-end">
+                       <div className="flex items-center gap-1 font-bold text-2xl text-[var(--color-primary)]">
+                         <span>₹{totalPrice + (deliveryType === "premium" ? 249 : 0)}</span>
+                       </div>
+                       <p className="text-[9px] text-[var(--color-text-secondary)] italic">₹{totalPrice} rent + {deliveryType === "premium" ? "₹249 logistics" : "Free delivery"}</p>
                      </div>
                    </div>
                 </div>
@@ -323,7 +389,6 @@ export default function ItemDetailPage() {
                         className="w-full h-10 rounded-xl border border-[var(--color-border)] bg-black/5 dark:bg-white/5 px-3 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
                       />
                     </div>
-                  </div>
                 </div>
               </div>
 

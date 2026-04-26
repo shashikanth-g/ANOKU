@@ -35,7 +35,7 @@ import { motion, AnimatePresence } from "framer-motion";
 // Admin Email for access control
 const ADMIN_EMAIL = "shashikanth.aeriva@gmail.com";
 
-type BookingStatus = "pending" | "approved" | "picked" | "delivered" | "completed" | "cancelled";
+type BookingStatus = "pending" | "approved" | "pickup" | "in_use" | "return" | "completed" | "cancelled";
 type PaymentStatus = "paid" | "pending" | "cash_on_delivery";
 
 interface Booking {
@@ -70,6 +70,7 @@ export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [newBookingAlert, setNewBookingAlert] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
@@ -83,11 +84,31 @@ export default function AdminDashboard() {
     }
   }, [user, userEmail]);
 
+  // Real-time polling for new bookings
+  useEffect(() => {
+    if (userEmail !== "offical.shashikanth@gmail.com") return;
+
+    const interval = setInterval(async () => {
+      try {
+        const data = await fetchApi("/bookings/");
+        if (bookings.length > 0 && data.length > bookings.length) {
+          setNewBookingAlert(true);
+        }
+        setBookings(data);
+      } catch (err) {
+        console.error("Polling error:", err);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [bookings.length, userEmail]);
+
   const loadBookings = async () => {
     try {
       setLoading(true);
       const data = await fetchApi("/bookings/");
       setBookings(data);
+      setNewBookingAlert(false);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -153,6 +174,36 @@ export default function AdminDashboard() {
       <Header />
 
       <main className="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+        <AnimatePresence>
+          {newBookingAlert && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="mb-6"
+            >
+              <div className="bg-[var(--color-primary)] text-white p-4 rounded-2xl flex items-center justify-between shadow-lg shadow-[var(--color-primary)]/20 border border-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center animate-pulse">
+                    <Package className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="font-bold">New Booking Received!</p>
+                    <p className="text-xs text-white/80">New items have been listed for rental.</p>
+                  </div>
+                </div>
+                <Button 
+                  size="sm" 
+                  variant="secondary"
+                  className="bg-white text-[var(--color-primary)] hover:bg-white/90 font-bold px-6"
+                  onClick={() => setNewBookingAlert(false)}
+                >
+                  Dismiss
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
@@ -164,6 +215,25 @@ export default function AdminDashboard() {
             </Button>
           </div>
         </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="p-4 border-none shadow-sm bg-white dark:bg-zinc-800">
+            <p className="text-xs text-[var(--color-text-secondary)] font-bold uppercase tracking-wider mb-1">Total Bookings</p>
+            <p className="text-2xl font-bold">{bookings.length}</p>
+          </Card>
+          <Card className="p-4 border-none shadow-sm bg-white dark:bg-zinc-800 border-l-4 border-yellow-500">
+            <p className="text-xs text-[var(--color-text-secondary)] font-bold uppercase tracking-wider mb-1">Pending Approval</p>
+            <p className="text-2xl font-bold text-yellow-600">{bookings.filter(b => b.status === 'pending').length}</p>
+          </Card>
+          <Card className="p-4 border-none shadow-sm bg-white dark:bg-zinc-800 border-l-4 border-blue-500">
+            <p className="text-xs text-[var(--color-text-secondary)] font-bold uppercase tracking-wider mb-1">Active Rentals</p>
+            <p className="text-2xl font-bold text-blue-600">{bookings.filter(b => b.status === 'in_use').length}</p>
+          </Card>
+          <Card className="p-4 border-none shadow-sm bg-white dark:bg-zinc-800 border-l-4 border-green-500">
+            <p className="text-xs text-[var(--color-text-secondary)] font-bold uppercase tracking-wider mb-1">Revenue</p>
+            <p className="text-2xl font-bold text-green-600">₹{bookings.reduce((s, b) => s + (b.status !== 'cancelled' ? b.total_price : 0), 0).toLocaleString()}</p>
+          </Card>
+        </div>
 
         {/* Filters */}
         <Card className="border-none shadow-sm">
@@ -264,13 +334,14 @@ function BookingCard({
   const statusColors = {
     pending: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-500",
     approved: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-500",
-    picked: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-500",
-    delivered: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-500",
+    pickup: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-500",
+    in_use: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-500",
+    return: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-500",
     completed: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-500",
     cancelled: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-500",
   };
 
-  const steps = ["pending", "approved", "picked", "delivered", "completed"];
+  const steps = ["pending", "approved", "pickup", "in_use", "return", "completed"];
   const currentStepIndex = steps.indexOf(booking.status);
 
   return (
@@ -438,16 +509,21 @@ function BookingCard({
             </Button>
           )}
           {booking.status === "approved" && (
-            <Button size="sm" className="h-10 px-4 bg-blue-600 hover:bg-blue-700" onClick={() => onStatusUpdate(booking.id, "picked")}>
-              Mark Picked
+            <Button size="sm" className="h-10 px-4 bg-blue-600 hover:bg-blue-700" onClick={() => onStatusUpdate(booking.id, "pickup")}>
+              Mark Pickup
             </Button>
           )}
-          {booking.status === "picked" && (
-            <Button size="sm" className="h-10 px-4 bg-indigo-600 hover:bg-indigo-700" onClick={() => onStatusUpdate(booking.id, "delivered")}>
-              Mark Delivered
+          {booking.status === "pickup" && (
+            <Button size="sm" className="h-10 px-4 bg-indigo-600 hover:bg-indigo-700" onClick={() => onStatusUpdate(booking.id, "in_use")}>
+              Mark In Use
             </Button>
           )}
-          {booking.status === "delivered" && (
+          {booking.status === "in_use" && (
+            <Button size="sm" className="h-10 px-4 bg-orange-600 hover:bg-orange-700" onClick={() => onStatusUpdate(booking.id, "return")}>
+              Mark Returned
+            </Button>
+          )}
+          {booking.status === "return" && (
             <Button size="sm" className="h-10 px-4 bg-[var(--color-primary)]" onClick={() => onStatusUpdate(booking.id, "completed")}>
               Complete
             </Button>
