@@ -236,6 +236,7 @@ export default function ItemDetailPage() {
                     <div className="flex items-center gap-3">
                       <input 
                         type="number" 
+                        min="1"
                         placeholder="e.g. 4"
                         value={duration}
                         onChange={(e) => setDuration(e.target.value)}
@@ -499,7 +500,7 @@ export default function ItemDetailPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-[var(--color-text-secondary)]">Duration</span>
-                  <span className="font-bold">{duration >= 24 ? `${duration/24} Days` : `${duration} Hours`}</span>
+                  <span className="font-bold">{Number(duration) >= 24 ? `${Math.round(Number(duration)/24)} Days` : `${duration} Hours`}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-[var(--color-text-secondary)]">Total Paid</span>
