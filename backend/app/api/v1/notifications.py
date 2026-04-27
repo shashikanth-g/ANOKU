@@ -6,7 +6,7 @@ from uuid import UUID
 from app.db.database import get_db
 from app.schemas.notification import Notification as NotificationSchema
 from app.models.notification import Notification
-from app.api.v1.auth import get_current_user
+from app.core.deps import get_current_user
 from app.models.user import User
 
 router = APIRouter()
