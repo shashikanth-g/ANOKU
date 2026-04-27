@@ -8,7 +8,7 @@ import { Home, Search, PlusCircle, Calendar, User } from "lucide-react";
 
 const navLinks = [
   { name: "Home", href: "/", icon: Home },
-  { name: "Explore", href: "/explore", icon: Search },
+  { name: "Explore", href: "/browse", icon: Search },
   { name: "List", href: "/owner/upload", icon: PlusCircle, isMain: true },
   { name: "Bookings", href: "/bookings", icon: Calendar },
   { name: "Profile", href: "/profile", icon: User },

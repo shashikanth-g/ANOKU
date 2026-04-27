@@ -29,7 +29,7 @@ export function Header() {
             <div className="h-8 w-8 rounded-lg bg-[var(--color-primary)] flex items-center justify-center shadow-lg shadow-[var(--color-primary)]/20">
               <span className="text-white font-bold text-xl leading-none">A</span>
             </div>
-            <span className="hidden sm:inline-block font-bold text-xl tracking-tight text-[var(--color-primary)]">
+            <span className="font-bold text-xl tracking-tight text-[var(--color-primary)]">
               ANOKU
             </span>
           </Link>

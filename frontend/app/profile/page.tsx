@@ -6,7 +6,7 @@ import { Navigation } from "@/components/layout/Navigation";
 import { Button } from "@/components/common/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/common/Card";
 import { useAuthStore } from "@/store/authStore";
-import { User, Mail, Phone, MapPin, LogOut, ChevronRight, ShieldCheck, Loader2, Crosshair } from "lucide-react";
+import { User, Mail, Phone, MapPin, LogOut, ChevronRight, ShieldCheck, Loader2, Crosshair, Shirt, PieChart, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 export default function ProfilePage() {
@@ -228,6 +228,33 @@ export default function ProfilePage() {
                  </div>
               </CardContent>
            </Card>
+
+           <div className="space-y-3">
+              <p className="text-[10px] uppercase font-bold text-[var(--color-text-secondary)] ml-1">Manage Account</p>
+              <div className="grid grid-cols-1 gap-3">
+                <Button href="/owner/items" variant="outline" className="w-full h-14 rounded-2xl justify-between px-6 border-[var(--color-border)]/50 hover:border-[var(--color-primary)]/50 group">
+                   <div className="flex items-center gap-3">
+                     <Shirt className="w-5 h-5 text-[var(--color-primary)] transition-transform group-hover:scale-110" />
+                     <span className="font-semibold">My Items</span>
+                   </div>
+                   <ChevronRight className="w-4 h-4 text-[var(--color-text-secondary)]" />
+                </Button>
+                <Button href="/bookings" variant="outline" className="w-full h-14 rounded-2xl justify-between px-6 border-[var(--color-border)]/50 hover:border-[var(--color-primary)]/50 group">
+                   <div className="flex items-center gap-3">
+                     <Calendar className="w-5 h-5 text-[var(--color-primary)] transition-transform group-hover:scale-110" />
+                     <span className="font-semibold">My Bookings</span>
+                   </div>
+                   <ChevronRight className="w-4 h-4 text-[var(--color-text-secondary)]" />
+                </Button>
+                <Button href="/owner/earnings" variant="outline" className="w-full h-14 rounded-2xl justify-between px-6 border-[var(--color-border)]/50 hover:border-[var(--color-primary)]/50 group">
+                   <div className="flex items-center gap-3">
+                     <PieChart className="w-5 h-5 text-[var(--color-primary)] transition-transform group-hover:scale-110" />
+                     <span className="font-semibold">Earnings & Analytics</span>
+                   </div>
+                   <ChevronRight className="w-4 h-4 text-[var(--color-text-secondary)]" />
+                </Button>
+              </div>
+           </div>
 
            <div className="space-y-3">
               <Button variant="outline" className="w-full h-14 rounded-2xl justify-start px-6 gap-3">
