@@ -1,4 +1,4 @@
-import { PWAHandler } from "@/components/layout/PWAHandler";
+import PWAInstall from "@/components/PWAInstall";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -71,7 +71,7 @@ export default function RootLayout({
             </div>
           </div>
         </div>
-        <PWAHandler />
+        <PWAInstall />
         {children}
       </body>
     </html>
