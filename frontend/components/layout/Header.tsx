@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { BackButton } from "@/components/common/BackButton";
 import { useSearchStore } from "@/store/searchStore";
 import { useCartStore } from "@/store/cartStore";
+import { NotificationBell } from "./NotificationBell";
 
 export function Header() {
   const pathname = usePathname();
@@ -74,11 +75,7 @@ export function Header() {
               <span className="sr-only">Cart</span>
             </Button>
           </Link>
-          <Button variant="ghost" size="icon" className="relative h-12 w-12">
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[var(--color-error)] border-2 border-[var(--color-background)]"></span>
-            <span className="sr-only">Notifications</span>
-          </Button>
+          <NotificationBell />
           <Link href="/profile">
             <Button variant="ghost" size="icon" className="hidden sm:flex rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)] hover:bg-[var(--color-accent)]/20 h-12 w-12">
               <User className="h-5 w-5" />

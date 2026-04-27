@@ -7,12 +7,16 @@ from app.db.database import get_db
 from app.schemas.booking import Booking as BookingSchema, BookingCreate, BookingUpdate
 from app.models.booking import Booking
 from app.crud import booking as crud_booking
+from app.crud.notification import create_notification
 
 router = APIRouter()
 
 @router.post("/", response_model=BookingSchema)
 def create_booking(booking: BookingCreate, db: Session = Depends(get_db)):
-    return crud_booking.create_booking(db=db, booking=booking)
+    new_booking = crud_booking.create_booking(db=db, booking=booking)
+    create_notification(db, new_booking.renter_id, "Your booking has been placed successfully")
+    create_notification(db, new_booking.owner_id, "You have a new booking request")
+    return new_booking
 
 @router.get("/", response_model=List[BookingSchema])
 def get_all_bookings(db: Session = Depends(get_db)):
@@ -47,6 +51,8 @@ def update_booking_status(
 
     if "status" in data:
         booking.status = data["status"]
+        create_notification(db, booking.renter_id, f"Booking status updated to {booking.status}")
+        create_notification(db, booking.owner_id, f"Booking status updated to {booking.status}")
     
     if "payment_status" in data:
         booking.payment_status = data["payment_status"]
