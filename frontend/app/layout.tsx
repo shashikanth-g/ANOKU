@@ -1,3 +1,4 @@
+import { PWAHandler } from "@/components/layout/PWAHandler";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -11,8 +12,6 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains",
   subsets: ["latin"],
 });
-
-import { PWAHandler } from "@/components/layout/PWAHandler";
 
 export const metadata: Metadata = {
   title: "ANOKU | Premium Fashion Rental",
@@ -72,8 +71,8 @@ export default function RootLayout({
             </div>
           </div>
         </div>
-        {children}
         <PWAHandler />
+        {children}
       </body>
     </html>
   );
