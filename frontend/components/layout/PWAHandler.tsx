@@ -9,18 +9,27 @@ export function PWAHandler() {
   const [isInstallable, setIsInstallable] = useState(false);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     // Register Service Worker
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
+      const registerSW = () => {
         navigator.serviceWorker.register("/sw.js").then(
           (registration) => {
-            console.log("SW registered: ", registration);
+            console.log("SW registered");
           },
-          (registrationError) => {
-            console.log("SW registration failed: ", registrationError);
+          (err) => {
+            console.log("SW registration failed", err);
           }
         );
-      });
+      };
+
+      if (document.readyState === "complete") {
+        registerSW();
+      } else {
+        window.addEventListener("load", registerSW);
+        return () => window.removeEventListener("load", registerSW);
+      }
     }
 
     // Handle Install Prompt
