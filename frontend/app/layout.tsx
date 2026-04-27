@@ -12,6 +12,8 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+import { PWAHandler } from "@/components/layout/PWAHandler";
+
 export const metadata: Metadata = {
   title: "ANOKU | Premium Fashion Rental",
   description: "Peer-to-peer fashion & accessories rental platform",
@@ -29,6 +31,11 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#0B6E6E" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="ANOKU" />
         <script dangerouslySetInnerHTML={{
           __html: `
             (function() {
@@ -66,6 +73,7 @@ export default function RootLayout({
           </div>
         </div>
         {children}
+        <PWAHandler />
       </body>
     </html>
   );
