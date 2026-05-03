@@ -1,7 +1,5 @@
 "use client";
 
 export default function Skeleton() {
-  return <div>Loading...</div>;
+  return <div>Loading...</div>; // force update
 }
-
-// build fix applied
