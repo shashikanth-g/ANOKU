@@ -8,7 +8,6 @@ import { Card } from "@/components/common/Card";
 import { CheckCircle2, Circle, Truck, Package, MapPin, Phone, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/common/Button";
-import Skeleton from "../../../components/common/Skeleton";
 
 const TRACKING_STEPS = [
   { id: 1, title: "Order Confirmed", time: "Oct 24, 10:30 AM", status: "completed" },

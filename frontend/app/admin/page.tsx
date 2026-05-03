@@ -8,7 +8,6 @@ import { Navigation } from "@/components/layout/Navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
-import Skeleton from "../../components/common/Skeleton";
 import {
   Search,
   Filter,
@@ -279,7 +278,7 @@ export default function AdminDashboard() {
         {loading ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {[1, 2, 3, 4].map(i => (
-              <Skeleton key={i} className="h-80 w-full rounded-3xl" />
+              <p key={i}>Loading...</p>
             ))}
           </div>
         ) : error ? (
