@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Bell, CheckCircle2, Clock } from "lucide-react";
 import { getNotifications, markNotificationAsRead } from "@/lib/notifications";
-import { Button } from "./common/Button";
+import { Button } from "../common/Button";
 import { formatDistanceToNow } from "date-fns";
 
 export function NotificationBell() {
