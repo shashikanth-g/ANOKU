@@ -9,6 +9,7 @@ import { useAuthStore } from "@/store/authStore";
 import { fetchApi } from "@/lib/api";
 import { Shirt, Plus, Loader2, Star, Edit3, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function MyItemsPage() {
   const [items, setItems] = React.useState<any[]>([]);
@@ -60,11 +61,13 @@ export default function MyItemsPage() {
             {items.map((item) => (
               <Card key={item.id} className="overflow-hidden border-none shadow-xl glass">
                 <CardContent className="p-0 flex flex-col md:flex-row">
-                  <div className="relative w-full md:w-48 h-48 md:h-auto">
-                    <img 
+                  <div className="relative w-full md:w-48 h-48 md:h-auto overflow-hidden">
+                    <Image 
                       src={item.photos?.[0] || "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80"} 
-                      alt={item.name}
-                      className="w-full h-full object-cover"
+                      alt={item.name || "Item image"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 192px"
                     />
                   </div>
                   <div className="p-6 flex-1 flex flex-col justify-between">

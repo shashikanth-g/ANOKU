@@ -22,9 +22,13 @@ export function NotificationBell() {
 
   React.useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
   }, [fetchNotifications]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      fetchNotifications();
+    }
+  }, [isOpen, fetchNotifications]);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

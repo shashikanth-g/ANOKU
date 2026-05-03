@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Header } from "@/components/layout/Header";
+import Image from "next/image";
 import { Navigation } from "@/components/layout/Navigation";
 import { Card } from "@/components/common/Card";
 import { CheckCircle2, Circle, Truck, Package, MapPin, Phone, MessageSquare } from "lucide-react";
@@ -82,8 +83,14 @@ export default function TrackingPage() {
                 {/* Floating Courier Info Card */}
                 <div className="absolute bottom-6 left-6 right-6">
                    <Card className="p-4 glass border-none flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80" className="w-full h-full object-cover" />
+                      <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-zinc-800 overflow-hidden relative">
+                        <Image 
+                          src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80" 
+                          alt="Courier Photo"
+                          fill
+                          className="object-cover" 
+                          sizes="48px"
+                        />
                       </div>
                       <div className="flex-1">
                          <p className="font-bold text-sm">Rahul K. (ANOKU Delivery)</p>

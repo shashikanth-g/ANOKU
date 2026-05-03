@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ItemCard } from "./ItemCard";
 import { fetchApi } from "@/lib/api";
 import { Loader2 } from "lucide-react";
@@ -25,13 +25,13 @@ export function ItemGrid({ category, searchQuery }: { category?: string | null, 
     loadItems();
   }, []);
 
-  const filteredItems = items.filter(item => {
+  const filteredItems = useMemo(() => items.filter(item => {
     const matchesCategory = !category || item.category === category;
     const matchesSearch = !searchQuery || 
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
       item.category.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
-  });
+  }), [items, category, searchQuery]);
 
   if (loading) {
     return (

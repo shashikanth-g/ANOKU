@@ -14,10 +14,18 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     ...options.headers,
   };
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
+  const fetchOptions: RequestInit = {
     ...options,
     headers,
-  });
+  };
+
+  if (!options.method || options.method.toUpperCase() === 'GET') {
+    if (!fetchOptions.next && !fetchOptions.cache) {
+      fetchOptions.next = { revalidate: 60 };
+    }
+  }
+
+  const response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
 
   if (response.status === 401) {
     clearToken();

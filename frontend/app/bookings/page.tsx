@@ -4,6 +4,7 @@ import * as React from "react";
 import { Header } from "@/components/layout/Header";
 import { Navigation } from "@/components/layout/Navigation";
 import { Card, CardContent } from "@/components/common/Card";
+import { SkeletonBookingCard } from "@/components/common/Skeleton";
 import { useAuthStore } from "@/store/authStore";
 import { fetchApi } from "@/lib/api";
 import { Calendar, Package, Clock, CheckCircle2, Loader2 } from "lucide-react";
@@ -28,14 +29,6 @@ export default function BookingsPage() {
       .finally(() => setLoading(false));
   }, [user, router]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[var(--color-background)]">
-        <Loader2 className="w-10 h-10 animate-spin text-[var(--color-primary)]" />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-[var(--color-background)]">
       <Header />
@@ -43,7 +36,13 @@ export default function BookingsPage() {
       <main className="flex-1 container mx-auto px-4 py-8 pb-32">
         <h1 className="text-3xl font-bold mb-8">My Bookings</h1>
 
-        {bookings.length === 0 ? (
+        {loading ? (
+          <div className="grid gap-6">
+            {[...Array(3)].map((_, i) => (
+              <SkeletonBookingCard key={i} />
+            ))}
+          </div>
+        ) : bookings.length === 0 ? (
           <div className="text-center py-20 bg-[var(--color-card)] rounded-3xl border border-[var(--color-border)]">
              <Package className="w-16 h-16 text-[var(--color-text-secondary)] mx-auto mb-4 opacity-20" />
              <p className="text-lg font-medium text-[var(--color-text-secondary)]">No bookings yet</p>
@@ -59,11 +58,13 @@ export default function BookingsPage() {
                 onClick={() => router.push(`/items/${booking.item_id}`)}
               >
                 <CardContent className="p-0 flex flex-col md:flex-row">
-                  <div className="relative w-full md:w-48 h-48 md:h-auto">
-                    <img 
+                  <div className="relative w-full md:w-48 h-48 md:h-auto overflow-hidden">
+                    <Image 
                       src={booking.item?.photos?.[0] || "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80"} 
-                      alt={booking.item?.name}
-                      className="w-full h-full object-cover"
+                      alt={booking.item?.name || "Item image"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 192px"
                     />
                   </div>
                   <div className="p-6 flex-1">

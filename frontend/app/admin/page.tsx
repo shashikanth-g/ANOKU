@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useAuthStore } from "@/store/authStore";
 import { Header } from "@/components/layout/Header";
 import { Navigation } from "@/components/layout/Navigation";
@@ -361,8 +362,14 @@ function BookingCard({
       <CardHeader className="p-5 border-b border-zinc-100 dark:border-zinc-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0">
-              <img src={booking.item.photos?.[0] || "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80"} className="w-full h-full object-cover" alt={booking.item.name} />
+            <div className="h-12 w-12 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 relative">
+              <Image 
+                src={booking.item.photos?.[0] || "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80"} 
+                className="object-cover" 
+                alt={booking.item.name || "Item image"} 
+                fill
+                sizes="48px"
+              />
             </div>
             <div>
               <CardTitle className="text-lg line-clamp-1">{booking.item.name}</CardTitle>

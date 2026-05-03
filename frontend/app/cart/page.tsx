@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/common/Card";
 import { useCartStore } from "@/store/cartStore";
 import { Trash2, ShoppingBag, ArrowRight, ChevronRight, Clock, Truck, Sparkles, Waves } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { useState } from "react";
@@ -94,11 +95,13 @@ export default function CartPage() {
             {items.map((item, index) => (
               <Card key={item.cartItemId || `${item.id}-${index}`} className="overflow-hidden border-none shadow-xl glass group">
                 <CardContent className="p-0 flex h-28">
-                  <div className="relative w-28 h-full bg-black/5">
-                    <img 
+                  <div className="relative w-28 h-full bg-black/5 overflow-hidden">
+                    <Image 
                       src={item.image} 
                       alt={item.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 112px, 112px"
                     />
                   </div>
                   <div className="flex-1 p-4 flex flex-col justify-between">
