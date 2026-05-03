@@ -4,7 +4,7 @@ import * as React from "react";
 import { Header } from "@/components/layout/Header";
 import { Navigation } from "@/components/layout/Navigation";
 import { Card, CardContent } from "@/components/common/Card";
-import Skeleton from "@/components/common/Skeleton";
+import Skeleton from "../../components/common/Skeleton";
 import { useAuthStore } from "@/store/authStore";
 import { fetchApi } from "@/lib/api";
 import { Calendar, Package, Clock, CheckCircle2, Loader2 } from "lucide-react";
