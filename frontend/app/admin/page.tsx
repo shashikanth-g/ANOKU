@@ -8,7 +8,7 @@ import { Navigation } from "@/components/layout/Navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
-import { Skeleton } from "@/components/common/Skeleton";
+import Skeleton from "@/components/common/Skeleton";
 import {
   Search,
   Filter,

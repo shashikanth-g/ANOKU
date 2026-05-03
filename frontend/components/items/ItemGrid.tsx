@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { ItemCard } from "./ItemCard";
 import { fetchApi } from "@/lib/api";
 import { Loader2 } from "lucide-react";
-import { SkeletonItemCard } from "../common/Skeleton";
+import Skeleton from "../common/Skeleton";
 
 export function ItemGrid({ category, searchQuery }: { category?: string | null, searchQuery?: string }) {
   const [items, setItems] = useState<any[]>([]);
@@ -37,7 +37,7 @@ export function ItemGrid({ category, searchQuery }: { category?: string | null, 
     return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         {[...Array(8)].map((_, i) => (
-          <SkeletonItemCard key={i} />
+          <Skeleton key={i} className="h-64 w-full rounded-2xl" />
         ))}
       </div>
     );
