@@ -5,7 +5,6 @@ import { Bell, CheckCircle2, Clock } from "lucide-react";
 import { getNotifications, markNotificationAsRead } from "@/lib/notifications";
 import { Button } from "../common/Button";
 import { formatDistanceToNow } from "date-fns";
-import Skeleton from "../common/Skeleton";
 
 export function NotificationBell() {
   const [notifications, setNotifications] = React.useState<any[]>([]);

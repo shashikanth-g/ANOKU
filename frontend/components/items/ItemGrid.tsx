@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { ItemCard } from "./ItemCard";
 import { fetchApi } from "@/lib/api";
 import { Loader2 } from "lucide-react";
+import Skeleton from "../common/Skeleton";
 
 export function ItemGrid({ category, searchQuery }: { category?: string | null, searchQuery?: string }) {
   const [items, setItems] = useState<any[]>([]);
@@ -36,7 +37,17 @@ export function ItemGrid({ category, searchQuery }: { category?: string | null, 
     return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         {[...Array(8)].map((_, i) => (
-          <p key={i}>Loading...</p>
+          <div key={i} className="space-y-4 p-4 rounded-3xl glass">
+            <Skeleton className="aspect-[4/5] w-full rounded-2xl" />
+            <div className="space-y-2 px-1">
+              <Skeleton className="h-5 w-3/4 rounded-full" />
+              <Skeleton className="h-4 w-1/2 rounded-full opacity-60" />
+            </div>
+            <div className="flex justify-between items-center pt-4 px-1 border-t border-[var(--color-border)]/20">
+               <Skeleton className="h-6 w-1/4 rounded-full" />
+               <Skeleton className="h-4 w-1/5 rounded-full opacity-60" />
+            </div>
+          </div>
         ))}
       </div>
     );

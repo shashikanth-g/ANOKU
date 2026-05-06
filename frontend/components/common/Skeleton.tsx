@@ -1,5 +1,13 @@
 "use client";
 
-export default function Skeleton() {
-  return <div>Loading...</div>; // force update
+type SkeletonProps = {
+  className?: string;
+};
+
+export default function Skeleton({ className = "" }: SkeletonProps) {
+  return (
+    <div
+      className={`animate-pulse rounded-md bg-gray-200 dark:bg-gray-700 ${className}`}
+    />
+  );
 }

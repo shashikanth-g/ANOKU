@@ -8,6 +8,7 @@ import { Navigation } from "@/components/layout/Navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
+import Skeleton from "@/components/common/Skeleton";
 import {
   Search,
   Filter,
@@ -278,7 +279,21 @@ export default function AdminDashboard() {
         {loading ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {[1, 2, 3, 4].map(i => (
-              <p key={i}>Loading...</p>
+              <div key={i} className="glass rounded-3xl p-6 shadow-xl border border-[var(--color-border)]/10 space-y-6">
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-14 w-14 rounded-2xl shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-6 w-1/3 rounded-full" />
+                    <Skeleton className="h-4 w-1/4 rounded-full opacity-60" />
+                  </div>
+                  <Skeleton className="h-8 w-24 rounded-full" />
+                </div>
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[var(--color-border)]/20">
+                   <Skeleton className="h-10 w-full rounded-xl" />
+                   <Skeleton className="h-10 w-full rounded-xl" />
+                   <Skeleton className="h-10 w-full rounded-xl" />
+                </div>
+              </div>
             ))}
           </div>
         ) : error ? (

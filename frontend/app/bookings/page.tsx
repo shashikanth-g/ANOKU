@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Navigation } from "@/components/layout/Navigation";
 import { Card, CardContent } from "@/components/common/Card";
 import { useAuthStore } from "@/store/authStore";
+import Skeleton from "@/components/common/Skeleton";
 import { fetchApi } from "@/lib/api";
 import { Calendar, Package, Clock, CheckCircle2, Loader2 } from "lucide-react";
 import Image from "next/image";
@@ -38,7 +39,26 @@ export default function BookingsPage() {
         {loading ? (
           <div className="grid gap-6">
             {[...Array(3)].map((_, i) => (
-              <p key={i}>Loading...</p>
+              <div key={i} className="flex flex-col md:flex-row gap-6 p-6 rounded-3xl glass border border-[var(--color-border)]/10 shadow-xl">
+                <Skeleton className="w-full md:w-48 h-48 md:h-auto rounded-2xl shrink-0" />
+                <div className="flex-1 space-y-4 py-2">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2 w-1/2">
+                      <Skeleton className="h-7 w-full rounded-full" />
+                      <Skeleton className="h-4 w-1/2 rounded-full opacity-60" />
+                    </div>
+                    <Skeleton className="h-6 w-24 rounded-full" />
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+                    {[1, 2, 3, 4].map(j => (
+                      <div key={j} className="space-y-2">
+                        <Skeleton className="h-3 w-1/2 rounded-full opacity-40" />
+                        <Skeleton className="h-5 w-full rounded-lg" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         ) : bookings.length === 0 ? (
