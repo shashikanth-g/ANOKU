@@ -28,8 +28,10 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
 
   if (response.status === 401) {
-    clearToken();
     if (typeof window !== 'undefined') {
+      // Use dynamic import or direct access to avoid circular dependency
+      const { useAuthStore } = require('@/store/authStore');
+      useAuthStore.getState().logout();
       window.location.href = '/login?expired=true';
     }
     throw new Error("Session expired. Please login again.");

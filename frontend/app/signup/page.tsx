@@ -35,7 +35,12 @@ export default function SignupPage() {
       });
       router.push("/login?signup=success");
     } catch (err: any) {
-      setError(err.message || "Signup failed");
+      const msg = err.message || "";
+      if (msg.toLowerCase().includes("already registered") || msg.toLowerCase().includes("already exists")) {
+        setError("Account already exists. Please log in.");
+      } else {
+        setError(msg || "Signup failed");
+      }
     } finally {
       setIsLoading(false);
     }

@@ -34,7 +34,9 @@ function LoginPageContent() {
       
       setToken(data.access_token);
       setAuth(data.user);
-      router.push("/");
+      
+      const redirectTo = searchParams.get("redirect") || "/";
+      router.push(redirectTo);
     } catch (err: any) {
       setError(err.message || "Invalid credentials");
     } finally {

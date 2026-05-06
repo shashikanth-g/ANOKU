@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { BackButton } from "@/components/common/BackButton";
 import { useSearchStore } from "@/store/searchStore";
 import { useCartStore } from "@/store/cartStore";
+import { useAuthStore } from "@/store/authStore";
 import { NotificationBell } from "./NotificationBell";
 
 export function Header() {
@@ -20,6 +21,7 @@ export function Header() {
   const router = useRouter();
   const { query, setQuery } = useSearchStore();
   const cartItems = useCartStore((state) => state.items);
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <header className="sticky top-0 z-40 w-full glass border-b border-[var(--color-border)]">
@@ -76,17 +78,28 @@ export function Header() {
             </Button>
           </Link>
           <NotificationBell />
-          <Link href="/profile">
-            <Button variant="ghost" size="icon" className="hidden sm:flex rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)] hover:bg-[var(--color-accent)]/20 h-12 w-12">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Profile</span>
-            </Button>
-          </Link>
-          <Link href="/owner/upload">
-            <Button className="hidden sm:flex h-12 rounded-full px-6 text-sm font-semibold">
-              List Item
-            </Button>
-          </Link>
+          
+          {isAuthenticated ? (
+            <>
+              <Link href="/profile">
+                <Button variant="ghost" size="icon" className="hidden sm:flex rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)] hover:bg-[var(--color-accent)]/20 h-12 w-12">
+                  <User className="h-5 w-5" />
+                  <span className="sr-only">Profile</span>
+                </Button>
+              </Link>
+              <Link href="/owner/upload">
+                <Button className="hidden sm:flex h-12 rounded-full px-6 text-sm font-semibold">
+                  List Item
+                </Button>
+              </Link>
+            </>
+          ) : (
+            <Link href="/login">
+              <Button className="h-12 rounded-full px-8 text-sm font-bold shadow-lg shadow-[var(--color-primary)]/20">
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>

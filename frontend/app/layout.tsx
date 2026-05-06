@@ -1,4 +1,5 @@
 import PWAInstall from "@/components/PWAInstall";
+import { AuthGuard } from "@/components/AuthGuard";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -72,7 +73,9 @@ export default function RootLayout({
           </div>
         </div>
         <PWAInstall />
-        {children}
+        <AuthGuard>
+          {children}
+        </AuthGuard>
       </body>
     </html>
   );
