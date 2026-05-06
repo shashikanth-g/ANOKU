@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, Heart, CheckCircle } from "lucide-react";
@@ -29,17 +29,23 @@ export function ItemCard({
   className,
 }: ItemCardProps) {
   const [isSaved, setIsSaved] = useState(false);
+  const [imgSrc, setImgSrc] = useState(imageUrl || "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80");
+
+  useEffect(() => {
+    setImgSrc(imageUrl || "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80");
+  }, [imageUrl]);
 
   return (
     <Link href={`/items/${id}`} className={cn("block group cursor-pointer", className)}>
       <Card className="overflow-hidden border-transparent hover:border-[var(--color-primary)]/20 transition-all duration-300">
         <div className="relative aspect-[4/5] overflow-hidden bg-black/5 dark:bg-white/5">
           <Image
-            src={imageUrl}
+            src={imgSrc}
             alt={name}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, 33vw"
+            onError={() => setImgSrc("https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80")}
           />
           <button
             onClick={(e) => {

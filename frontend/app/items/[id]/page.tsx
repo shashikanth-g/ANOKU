@@ -19,6 +19,7 @@ export default function ItemDetailPage() {
   const [loading, setLoading] = useState(true);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [duration, setDuration] = useState<string>("4"); // changed to string for better input handling
   const [durationType, setDurationType] = useState<"hours" | "days">("hours");
   const [deliveryType, setDeliveryType] = useState("standard");
@@ -35,6 +36,21 @@ export default function ItemDetailPage() {
         .finally(() => setLoading(false));
     }
   }, [params.id]);
+
+  useEffect(() => {
+    if (item) {
+      const photos = (item.photos && item.photos.length > 0 && item.photos[0]) 
+        ? item.photos 
+        : ["https://images.unsplash.com/photo-1551028719-00167b16eac5?w=1200&q=80"];
+      setGalleryImages(photos);
+    }
+  }, [item]);
+
+  const handleImageError = (idx: number) => {
+    const newImages = [...galleryImages];
+    newImages[idx] = "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=1200&q=80";
+    setGalleryImages(newImages);
+  };
 
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [latitude, setLatitude] = useState("");
@@ -81,7 +97,7 @@ export default function ItemDetailPage() {
       id: item.id,
       name: item.name,
       price: item.daily_price,
-      image: images[0],
+      image: galleryImages[0],
       deliveryType: deliveryType,
       deliveryCharge: logisticsCharge,
       durationHours: finalDuration,
@@ -156,8 +172,6 @@ export default function ItemDetailPage() {
     );
   }
 
-  const images = item.photos && item.photos.length > 0 ? item.photos : ["https://images.unsplash.com/photo-1551028719-00167b16eac5?w=1200&q=80"];
-
   return (
     <div className="flex flex-col min-h-screen bg-[var(--color-background)]">
       <Header />
@@ -169,22 +183,23 @@ export default function ItemDetailPage() {
           <div className="space-y-4">
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl bg-zinc-100 dark:bg-zinc-900">
               <Image 
-                src={images[activeImage]} 
+                src={galleryImages[activeImage]} 
                 alt={item.name}
                 fill
                 className="object-cover"
                 priority
+                onError={() => handleImageError(activeImage)}
               />
             </div>
-            {images.length > 1 && (
+            {galleryImages.length > 1 && (
               <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                {images.map((img: string, idx: number) => (
+                {galleryImages.map((img: string, idx: number) => (
                   <button 
                     key={idx}
                     onClick={() => setActiveImage(idx)}
                     className={`relative w-20 h-24 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${activeImage === idx ? 'border-[var(--color-primary)] scale-105' : 'border-transparent opacity-60'}`}
                   >
-                    <Image src={img} alt={`${item.name} ${idx}`} fill className="object-cover" />
+                    <Image src={img} alt={`${item.name} ${idx}`} fill className="object-cover" onError={() => handleImageError(idx)} />
                   </button>
                 ))}
               </div>

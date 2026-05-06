@@ -97,7 +97,7 @@ export default function CartPage() {
                 <CardContent className="p-0 flex h-28">
                   <div className="relative w-28 h-full bg-black/5 overflow-hidden">
                     <Image 
-                      src={item.image} 
+                      src={item.image || "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80"} 
                       alt={item.name}
                       fill
                       className="object-cover"
